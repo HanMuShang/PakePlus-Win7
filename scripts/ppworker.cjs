@@ -181,6 +181,12 @@ const main = async () => {
     const tempPath = path.join(__dirname, '../', 'processed-image.png')
     const icnsPath = path.join(__dirname, '../', 'icons', 'icon.icns')
     await createIcon(iconPath, tempPath, icnsPath)
+    // copy app-icon.png to src-electron/icon.png
+    await fs.copy(
+        iconPath,
+        path.join(__dirname, '../', 'src-electron', 'icon.png')
+    )
+    console.log('icon.png copied to src-electron/icon.png')
     // 设置github env
     setGithubEnv(name, showName, version, pubBody)
     console.log('🚀 worker end')
