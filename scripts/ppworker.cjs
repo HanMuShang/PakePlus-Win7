@@ -7,7 +7,7 @@ const ppconfig = require('./ppconfig.json')
 // update package.json build productName
 const updatePackage = async (appName, showName, author, version, id) => {
     const packageJson = await fs.readJson(
-        path.join(__dirname, '../', 'package.json'),
+        path.join(__dirname, '../', 'package.json')
     )
     packageJson.name = appName
     // update productName
@@ -26,7 +26,7 @@ const updateConfig = async (windows, desktop) => {
     const configJson = { ...windows, ...desktop }
     await fs.writeJson(
         path.join(__dirname, '../', 'src-electron', 'config.json'),
-        configJson,
+        configJson
     )
     console.log('config.json updated', configJson)
 }
@@ -43,7 +43,7 @@ const updatePPPwdHtml = (
     pwdStyle,
     pwdTheme,
     winConfig,
-    isHtml,
+    isHtml
 ) => {
     console.log('updatePPPwdHtml......')
     const indexHtmlPath = path.join(__dirname, '../src/pppwd.html')
@@ -68,16 +68,16 @@ const updatePPPwdHtml = (
 const updateRendererJs = async (url) => {
     const rendererJs = await fs.readFile(
         path.join(__dirname, '../', 'renderer.js'),
-        'utf8',
+        'utf8'
     )
     const newRendererJs = rendererJs.replace(
         /const DEFAULT_HOME_URL = '.*?'/, // 匹配任意url地址，需要使用正则表达式
-        `const DEFAULT_HOME_URL = '${url}'`,
+        `const DEFAULT_HOME_URL = '${url}'`
     )
     console.log('newRendererJs:', newRendererJs)
     await fs.writeFile(
         path.join(__dirname, '../', 'renderer.js'),
-        newRendererJs,
+        newRendererJs
     )
     console.log('renderer.js updated')
 }
@@ -86,12 +86,12 @@ const updateRendererJs = async (url) => {
 const updateMainJs = async (password) => {
     const mainJs = await fs.readFile(
         path.join(__dirname, '../', 'main.js'),
-        'utf8',
+        'utf8'
     )
     console.log('mainJs:', mainJs)
     const newMainJs = mainJs.replace(
         /const defaultExitPassword = '.*?'/,
-        `const defaultExitPassword = '${password}'`,
+        `const defaultExitPassword = '${password}'`
     )
     console.log('newMainJs:', newMainJs)
     await fs.writeFile(path.join(__dirname, '../', 'main.js'), newMainJs)
@@ -114,7 +114,7 @@ const createIcon = async (inputPath, tempOutputPath, icnsOutputPath) => {
                 input: Buffer.from(
                     `<svg>
          <rect x="0" y="0" width="1024" height="1024" rx="250" ry="250" />
-       </svg>`,
+       </svg>`
                 ),
                 blend: 'dest-in',
             },
@@ -130,7 +130,7 @@ const createIcon = async (inputPath, tempOutputPath, icnsOutputPath) => {
         .toFile(tempOutputPath)
         .then(() => {
             console.log(
-                'Image processing complete with rounded corners and padding.',
+                'Image processing complete with rounded corners and padding.'
             )
 
             // 读取处理后的 PNG 文件
@@ -149,7 +149,7 @@ const createIcon = async (inputPath, tempOutputPath, icnsOutputPath) => {
                         } else {
                             console.log(
                                 'ICNS file created successfully:',
-                                icnsOutputPath,
+                                icnsOutputPath
                             )
                             // 删除临时文件
                             fs.remove(tempOutputPath)
@@ -173,15 +173,9 @@ const setGithubEnv = (name, showName, version, pubBody) => {
         console.error('GITHUB_ENV is not defined')
         return
     }
-    // 判断 showName 是否包含中文字符
-    let rename = false
-    if (showName.match(/[\u4e00-\u9fa5]/)) {
-        rename = true
-    }
     try {
         const entries = {
             NAME: name,
-            RENAME: rename ? 'true' : 'false',
             VERSION: version,
             PUBBODY: pubBody,
         }
@@ -239,7 +233,7 @@ const main = async () => {
         pwdStyle,
         pwdTheme,
         winConfig,
-        isHtml,
+        isHtml
     )
     // console.log('password:', password)
     await updatePackage(name, showName, author, version, id)
@@ -253,7 +247,7 @@ const main = async () => {
     // copy app-icon.png to src-electron/icon.png
     await fs.copy(
         iconPath,
-        path.join(__dirname, '../', 'src-electron', 'icon.png'),
+        path.join(__dirname, '../', 'src-electron', 'icon.png')
     )
     console.log('icon.png copied to src-electron/icon.png')
     // 设置github env

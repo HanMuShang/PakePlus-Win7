@@ -160,12 +160,11 @@ jobs:
               run: npx electron-builder ${{ matrix.electron_target }} ${{ matrix.build_args }} --publish never
 
             - name: Rename files
-              if: env.RENAME == 'true'
               shell: bash
               run: |
-                  PREFIX="${GITHUB_REF_NAME}"
+                  PREFIX="${{ env.NAME }}-${{ matrix.artifact_name }}"
 
-                  echo "Prefix: $PREFIX"
+                  echo "Rename prefix: $PREFIX"
 
                   find dist -type f \
                     \( \
@@ -176,14 +175,24 @@ jobs:
                     -name "*.rpm" -o \
                     -name "*.zip" -o \
                     -name "*.tar.gz" \
-                    \) | while read file
+                    \) | while read -r file
                   do
                     dir=$(dirname "$file")
+                    ext="${file##*.}"
                     base=$(basename "$file")
 
-                    mv "$file" "$dir/$PREFIX-$base"
+                    suffix=""
+                    shopt -s nocasematch
+                    if [[ "$base" == *setup* ]]; then
+                      suffix="-setup"
+                    elif [[ "$base" == *portable* ]]; then
+                      suffix="-portable"
+                    fi
+                    shopt -u nocasematch
 
-                    echo "Renamed: $base"
+                    new_name="${PREFIX}${suffix}.${ext}"
+                    mv "$file" "$dir/$new_name"
+                    echo "Renamed: $base -> $new_name"
                   done
 
             - name: Upload artifacts
@@ -207,7 +216,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: ${{ github.ref_name }}
+                  tag_name: ${{ env.NAME }}
                   name: ${{ env.NAME }} v${{ env.VERSION }}
                   body: ${{ env.PUBBODY }}
                   draft: false
